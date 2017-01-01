@@ -5,7 +5,7 @@ var path = require('path')
 var fs = require('fs')
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'images/');
+        cb(null, 'image/');
     },
     filename: function(req, file, cb) {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -26,7 +26,7 @@ var userSchema = new Schema({
 	userId: String,
 	name: String,
 	contacts: [{ type: Schema.ObjectId, ref: 'Contact' }],
-	images: [{ type: Schema.ObjectId, ref: 'Img' }]
+	image: [{ type: Schema.ObjectId, ref: 'Img' }]
 });
 
 // Contacts Schema
@@ -108,7 +108,7 @@ app.get('/image/:target', function(req, res) {
     console.log("[*] Got something on GET(image)");
     console.log("   Request on " + req.params.target);
 
-    var filePath = "./images/" + req.params.target;
+    var filePath = "./image/" + req.params.target;
     var stat = fs.statSync(filePath);
 
     res.writeHead(200, {'Content-Type':'image', 'Content-Length':stat.size});
