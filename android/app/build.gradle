@@ -32,4 +32,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:design:25.1.0'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.koushikdutta.ion:ion:2.+'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }
