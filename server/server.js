@@ -38,12 +38,12 @@ var contactSchema = new Schema({
 			"url": String
 		}
 	},
+	id: String,
 	phone_number: String,
 	is_facebook: Boolean,
 	last_update: Date,
-	user: { type: Schema.ObjectId, ref: 'User' }
+	user: String
 });
-
 // Image Schema
 var imgSchema = new Schema({
     name: String,
@@ -61,22 +61,26 @@ app.use(bodyParser.json());
 // POST request for contacts
 app.post('/upload_contacts', function(req, res) {
 	console.log("Contacts POST request");
-	var newContact = new Contact({
-		name: req.headers['name'],
-		picture: req.headers['picture'],
-		phone_number: req.headers['phone_number'],
-		is_facebook: req.headers['is_facebook'],
-		last_update: req.headers['last_update'],
-		user: req.headers['user']
-	});	
-	newContact.save(function (err) {
-		if (err) throw err;
-		console.log("Image saved to DB!');
+	Contact.remove({}, function(err, removed) {
+		console.log("Removed: " + removed);
 	});
-
+	for (var i = 0; i < req.body.length; i++) {
+		var newContact = new Contact({
+			name: req.body[i]['name'],
+			picture: req.body[i]['picture'],
+			phone_number: req.body[i]['phone_number'],
+			is_facebook: req.body[i]['is_facebook'],
+			last_update: req.body[i]['last_update'],
+			user: req.body[i]['user']
+		});	
+		newContact.save(function (err) {
+			if (err) throw err;
+			console.log("Image saved to DB!");
+		});
+	}
     // Response
     var responseBody = {
-        result: 'OK'
+        result: 'OK',
     }
 
     res.writeHead(200, {'Content-Type':'application/json'});
