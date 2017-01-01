@@ -18,6 +18,8 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+import java.util.concurrent.ExecutionException;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+        removeContacts();
+
         Intent i = getIntent();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -44,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
         tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
         //Adding the tabs using addTab() method
-        tabLayout.addTab(tabLayout.newTab().setText("Tab A"));
+        tabLayout.addTab(tabLayout.newTab().setText("Contacts"));
+        tabLayout.addTab(tabLayout.newTab().setText("Facebook"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab B"));
         tabLayout.addTab(tabLayout.newTab().setText("Tab C"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -74,5 +79,18 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
+    }
+
+    public void removeContacts() {
+        String url = "http://52.78.52.132:3000" + "/remove_contacts";
+        OkHttpHandler handler = new OkHttpHandler();
+        String result = null;
+        try {
+            result = handler.execute(url).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }
