@@ -58,12 +58,21 @@ module.exports = Img;
 
 app.use(bodyParser.json());
 
-// POST request for contacts
-app.post('/upload_contacts', function(req, res) {
-	console.log("Contacts POST request");
+app.get('/remove_contacts', function(req, res) {
 	Contact.remove({}, function(err, removed) {
 		console.log("Removed: " + removed);
 	});
+    var responseBody = {
+        result: 'OK',
+    }
+
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.write(JSON.stringify(responseBody));
+    res.end();
+});
+
+// POST request for contacts
+app.post('/upload_contacts', function(req, res) {
 	for (var i = 0; i < req.body.length; i++) {
 		var newContact = new Contact({
 			name: req.body[i]['name'],
