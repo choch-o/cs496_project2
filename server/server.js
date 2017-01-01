@@ -16,18 +16,73 @@ var app = new express();
 
 
 var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
 mongoose.connect('localhost', 'test');
+
+/* MongoDB SCHEMA */ 
+var Schema = mongoose.Schema;
+
+// User schema
+var userSchema = new Schema({
+	userId: String,
+	name: String,
+	contacts: [{ type: Schema.ObjectId, ref: 'Contact' }],
+	images: [{ type: Schema.ObjectId, ref: 'Img' }]
+});
+
+// Contacts Schema
+var contactSchema = new Schema({
+	name: String,
+	picture: {
+		"data": {
+			"is_silouette": Boolean,
+			"url": String
+		}
+	},
+	phone_number: String,
+	is_facebook: Boolean,
+	last_update: Date,
+	user: { type: Schema.ObjectId, ref: 'User' }
+});
+
+// Image Schema
 var imgSchema = new Schema({
     name: String,
     url: String,
     last_update: Date
 });
 
+var User = mongoose.model('User', userSchema);
+var Contact = mongoose.model('Contact', contactSchema);
 var Img = mongoose.model('image', imgSchema);
 module.exports = Img;
 
 app.use(bodyParser.json());
+
+// POST request for contacts
+app.post('/upload_contacts', function(req, res) {
+	console.log("Contacts POST request");
+	var newContact = new Contact({
+		name: req.headers['name'],
+		picture: req.headers['picture'],
+		phone_number: req.headers['phone_number'],
+		is_facebook: req.headers['is_facebook'],
+		last_update: req.headers['last_update'],
+		user: req.headers['user']
+	});	
+	newContact.save(function (err) {
+		if (err) throw err;
+		console.log("Image saved to DB!');
+	});
+
+    // Response
+    var responseBody = {
+        result: 'OK'
+    }
+
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.write(JSON.stringify(responseBody));
+    res.end();
+});
 
 // Give whole image list
 app.get('/image_list', function(req, res) {
