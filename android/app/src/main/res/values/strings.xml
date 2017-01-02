@@ -2,4 +2,7 @@
     <string name="app_name">Project2</string>
     <string name="facebook_app_id">113503925818200</string>
     <string name="fb_login_protocol_scheme">fb113503925818200</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

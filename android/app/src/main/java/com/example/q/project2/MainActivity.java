@@ -82,14 +82,14 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     }
 
     public void removeContacts() {
-        String url = "http://52.78.52.132:3000" + "/remove_contacts";
-        OkHttpHandler handler = new OkHttpHandler();
-        String result = null;
-        try {
-            result = handler.execute(url).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+            String url = "http://52.78.52.132:3000" + "/remove_contacts";
+            OkHttpHandler handler = new OkHttpHandler();
+            String result = null;
+            try {
+                result = handler.execute(url).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
             e.printStackTrace();
         }
     }

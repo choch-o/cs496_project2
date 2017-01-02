@@ -1,7 +1,11 @@
 package com.example.q.project2;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,7 +19,6 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -24,10 +27,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
 /**
  * Created by q on 2016-12-30.
@@ -36,9 +40,9 @@ import java.util.Date;
 
 public class TabBFragment extends Fragment {
     private final String serverURL = "http://52.78.52.132:3000";
-    private final String deviceURL = Environment.getExternalStorageDirectory().toString() + "/Foodie";
+//    private final String deviceURL = Environment.getExternalStorageDirectory().toString() + "/Foodie";
+    private String deviceURL = "";
     final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
-//    final String userID = accessToken.getUserId();
     private String userID = "";
     private String userName = "";
 
@@ -76,12 +80,29 @@ public class TabBFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(deviceURL.equals("")) {
+                    setDeviceURL(rootView);
+                    Toast.makeText(rootView.getContext(), deviceURL, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 loadFromDevice(rootView, adapter);
                 syncToServer(rootView, adapter);
             }
         });
 
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // TODO : Browse
+                setDeviceURL(rootView);
+                return true;
+            }
+        });
+
         return rootView;
+    }
+
+    public void setDeviceURL(final View view) {
     }
 
     public void loadFromServer(final View view, final Tab2Adapter adapter) {
@@ -100,12 +121,18 @@ public class TabBFragment extends Fragment {
                         }
 
                         JsonObject record;
+                        String fbname = "Anony";
                         for (int i=0 ; i<result.size() ; i++) {
                             record = result.get(i).getAsJsonObject();
+                            try {
+                                fbname = URLDecoder.decode(record.get("fbname").getAsString(), "utf-8");
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
                             adapter.addData(record.get("name").getAsString(),
                                             serverURL + "/" + record.get("url").getAsString(),
                                             record.get("fbid").getAsString(),
-                                            record.get("fbname").getAsString(), true);
+                                            fbname, true);
                         }
                     }
                 });
@@ -115,6 +142,7 @@ public class TabBFragment extends Fragment {
         File f = new File(deviceURL);
         File files[] = f.listFiles();
         for (int i=0 ; i<files.length ; i++) {
+            Log.d("loadFromDevice", files[i].getPath());
             adapter.addData(files[i].getName(), "file:" + files[i].getPath(), userID, userName, false);
         }
     }

@@ -20,9 +20,7 @@
         android:textColor="@color/white"
         android:textStyle="bold"
         android:layout_gravity="bottom"
-        android:text="Unknown User"
-        app:layout_anchor="@id/gallery_item"
-        app:layout_anchorGravity="bottom"/>
+        android:text="Unknown User"  />
 
 </android.support.design.widget.CoordinatorLayout>
 
