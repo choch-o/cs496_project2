@@ -23,10 +23,13 @@ var Schema = mongoose.Schema;
 
 // User schema
 var userSchema = new Schema({
-	userId: String,
-	name: String,
-	contacts: [{ type: Schema.ObjectId, ref: 'Contact' }],
-	image: [{ type: Schema.ObjectId, ref: 'Img' }]
+	userID: String,
+	userName: String,
+    profileURL: String,
+    awake: Boolean,
+    phone: String,
+    keycode: Number,
+	counterpart: [{ type: Schema.ObjectId, ref: 'User' }],
 });
 
 // Contacts Schema
@@ -85,7 +88,6 @@ app.post('/upload_contacts', function(req, res) {
 		});	
 		newContact.save(function (err) {
 			if (err) throw err;
-			console.log("Image saved to DB!");
 		});
 	}
     // Response
@@ -156,5 +158,72 @@ app.post('/image', upload.single('userFile'), function (req, res) {
     res.end();
 });
 
-app.listen(8080, function() { console.log("Listening on port #8080" )});
+
+///// Alarm Clock /////
+
+app.get('/check_me/:userID', function(req, res) {
+    // User : "Is there my userID in the database?"
+    console.log("[Alarm] Got something on GET/check_me");
+
+    console.log("[Alarm] " + req.params.userID)
+    User.find({userID : req.params.userID}, function(err, results) {
+        if (err) {
+            console.log("[Alarm/Get/check_me] Something goes wrong :(");
+            throw err;
+        }
+        res.writeHead(200, {'Content-Type':'application/json'});
+        res.write(JSON.stringify({result:results.length}));
+        res.end();
+    });
+});
+
+app.post('/enroll_me', function(req, res) {
+    // User : "I'll give you the information and profile picture."
+    // TODO : Add user to the database
+    console.log("[Alarm] Got something on POST/enroll_me");
+    console.log(req.body);
+    var newUser = User({
+        userID: req.body['userID'],
+        userName: req.body['userName'],
+        profileURL: req.body['profileURL'],
+        awake: true,
+        phone: req.body['phone'],
+        keycode: req.body['keycode'],
+        counterpart: null
+    });
+
+    newUser.save(function(err) {
+        if(err) throw err;
+        console.log("[Alarm/POST/enroll_me] User saved");
+    })
+
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.write(JSON.stringify({result: 'OK'}));
+    res.end();
+});
+
+app.get('/profile_list', function(req, res) {
+    // User : "Give me the full list of profile
+    console.log("[Alarm/GET/profile_list] Something happened");
+
+    User.find({}, function(err, results) {
+        if (err) throw err;
+
+        var responseBody = results;
+        res.write(JSON.stringify(responseBody));
+        res.end();
+    });
+});
+
+
+// Give an image in request
+app.get('/profile_image/:target', function(req, res) {
+    // User : "Give me the picture whose url is 'target'."
+    // pictures will be fetched from the web (url provieded by facebook)
+});
+
+
+
+
+app.listen(3000, function() { console.log("Listening on port #3000" )});
 
