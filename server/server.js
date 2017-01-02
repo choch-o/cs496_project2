@@ -44,11 +44,13 @@ var contactSchema = new Schema({
 	last_update: Date,
 	user: String
 });
+
 // Image Schema
 var imgSchema = new Schema({
     name: String,
     url: String,
-    last_update: Date
+    fbid: String,
+    fbname: String
 });
 
 var User = mongoose.model('User', userSchema);
@@ -79,7 +81,6 @@ app.post('/upload_contacts', function(req, res) {
 			picture: req.body[i]['picture'],
 			phone_number: req.body[i]['phone_number'],
 			is_facebook: req.body[i]['is_facebook'],
-			last_update: req.body[i]['last_update'],
 			user: req.body[i]['user']
 		});	
 		newContact.save(function (err) {
@@ -131,14 +132,13 @@ app.post('/image', upload.single('userFile'), function (req, res) {
     // Dealing with the request
     console.log("[*] Got Something on POST");
     console.log(req.file);
-    console.log(req.headers['name'] + " ## " + req.headers['last_update']);
 
     // Add to database
-    // TODO : Need to check duplicate
     var newImg = Img({
         name: req.headers['name'],
         url: req.file.destination + req.file.filename,
-        last_update: req.headers['last_update']
+        fbid: req.headers['fbid'],
+        fbname: req.headers['fbname']
     });
 
     newImg.save(function(err) {
