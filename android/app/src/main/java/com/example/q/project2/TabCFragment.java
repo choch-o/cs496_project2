@@ -44,7 +44,7 @@ public class TabCFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.tab3, container, false);
+        rootView = inflater.inflate(R.layout.tab3, container, false);
         Button alarmBtn = (Button) rootView.findViewById(R.id.call_alarm_btn);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
