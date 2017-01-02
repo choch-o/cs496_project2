@@ -1,7 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/gallery_item"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
-    android:scaleType="centerCrop"/>
+    android:layout_height="160dp">
+
+    <ImageView
+        android:id="@+id/gallery_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <TextView
+        android:id="@+id/gallery_fbname"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:background="#aa000000"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_gravity="bottom"
+        android:text="Unknown User"
+        app:layout_anchor="@id/gallery_item"
+        app:layout_anchorGravity="bottom"/>
+
+</android.support.design.widget.CoordinatorLayout>
+
+
