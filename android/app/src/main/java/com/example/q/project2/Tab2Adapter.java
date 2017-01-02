@@ -62,6 +62,7 @@ public class Tab2Adapter extends BaseAdapter {
 
     public void clearData() {
         items.clear();
+        notifyDataSetChanged();
     }
 
     public void addData(String name, String url, String fbid, String fbname, boolean on_server) {
