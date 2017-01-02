@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -40,8 +41,11 @@ import java.util.List;
 
 public class TabBFragment extends Fragment {
     private final String serverURL = "http://52.78.52.132:3000";
-//    private final String deviceURL = Environment.getExternalStorageDirectory().toString() + "/Foodie";
-    private String deviceURL = "";
+    private final String[] deviceURLs = {
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString(),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString(),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString(),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString()};
     final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
     private String userID = "";
     private String userName = "";
@@ -80,29 +84,20 @@ public class TabBFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(deviceURL.equals("")) {
-                    setDeviceURL(rootView);
-                    Toast.makeText(rootView.getContext(), deviceURL, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                loadFromDevice(rootView, adapter);
-                syncToServer(rootView, adapter);
+                loadFromServer(rootView, adapter);
             }
         });
 
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                // TODO : Browse
-                setDeviceURL(rootView);
+                loadFromDevice(rootView, adapter);
+                syncToServer(rootView, adapter);
                 return true;
             }
         });
 
         return rootView;
-    }
-
-    public void setDeviceURL(final View view) {
     }
 
     public void loadFromServer(final View view, final Tab2Adapter adapter) {
@@ -139,12 +134,28 @@ public class TabBFragment extends Fragment {
     }
 
     public void loadFromDevice(final View view, final Tab2Adapter adapter) {
-        File f = new File(deviceURL);
-        File files[] = f.listFiles();
-        for (int i=0 ; i<files.length ; i++) {
-            Log.d("loadFromDevice", files[i].getPath());
-            adapter.addData(files[i].getName(), "file:" + files[i].getPath(), userID, userName, false);
+        for (int i_url=0 ; i_url<deviceURLs.length ; i_url++) {
+            File f = new File(deviceURLs[i_url]);
+            File files[] = f.listFiles();
+            if(files == null) { continue; }
+            for (int i=0 ; i<files.length ; i++) {
+                String type = MimeTypeMap.getFileExtensionFromUrl(files[i].getPath());
+                Log.d("loadFromDevice", files[i].getPath());
+                if(type.equals("jpg") || type.equals("png")) {
+                    adapter.addData(files[i].getName(), "file:" + files[i].getPath(), userID, userName, false);
+                }
+            }
         }
+    }
+
+    // url = file path or whatever suitable URL you want.
+    public static String getMimeType(String url) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
     }
 
     public void syncToServer(final View view, final Tab2Adapter adapter) {
