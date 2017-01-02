@@ -39,7 +39,7 @@ public class LoginActivity extends Activity {
         AppEventsLogger.activateApp(this);
         callbackManager = CallbackManager.Factory.create();
 
-        if (AccessToken.getCurrentAccessToken() != null) {
+        if (isLoggedIn()) {
             moveToMain();
         }
         else {
@@ -84,5 +84,10 @@ public class LoginActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private boolean isLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null;
     }
 }

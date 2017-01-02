@@ -23,9 +23,9 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:src="@drawable/ic_sync"
-        android:background="@color/colorAccent"
-        app:layout_anchor="@id/gallery_view"
-        app:layout_anchorGravity="bottom|right|end" />
+        android:background="@color/colorAccent" />
+        <!--app:layout_anchor="@id/gallery_view"-->
+        <!--app:layout_anchorGravity="bottom|right|end" />-->
 
 </android.support.design.widget.CoordinatorLayout>
 

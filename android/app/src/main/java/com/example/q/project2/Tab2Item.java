@@ -7,14 +7,32 @@ package com.example.q.project2;
 public class Tab2Item {
     private String name;
     private String url;
-    private String last_update;
+    private String fbid;
+    private String fbname;
     private boolean on_server;
 
-    public Tab2Item(String name, String url, String last_update, boolean on_server) {
+    public Tab2Item(String name, String url, String fbid, String fbname, boolean on_server) {
         this.name = name;
         this.url = url;
-        this.last_update = last_update;
+        this.fbid = fbid;
+        this.fbname = fbname;
         this.on_server = on_server;
+    }
+
+    public String getFbname() {
+        return fbname;
+    }
+
+    public void setFbname(String fbname) {
+        this.fbname = fbname;
+    }
+
+    public String getFbid() {
+        return fbid;
+    }
+
+    public void setFbid(String fbid) {
+        this.fbid = fbid;
     }
 
     public String getName() {
@@ -31,14 +49,6 @@ public class Tab2Item {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getLast_update() {
-        return last_update;
-    }
-
-    public void setLast_update(String last_update) {
-        this.last_update = last_update;
     }
 
     public boolean isOn_server() {

@@ -12,6 +12,8 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,8 +21,10 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,10 +33,14 @@ import java.util.Date;
  * Created by q on 2016-12-30.
  */
 
-public class Tab2Fragment extends Fragment {
+
+public class TabBFragment extends Fragment {
     private final String serverURL = "http://52.78.52.132:3000";
-    // TODO : How to set this deviceURL?
     private final String deviceURL = Environment.getExternalStorageDirectory().toString() + "/Foodie";
+    final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
+//    final String userID = accessToken.getUserId();
+    private String userID = "";
+    private String userName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -40,15 +48,29 @@ public class Tab2Fragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.tab2, container, false);
 
-        final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
-        final String userID = accessToken.getUserId();
-
         final GridView gridView = (GridView)rootView.findViewById(R.id.gallery_view);
         final Tab2Adapter adapter = new Tab2Adapter();
 
         gridView.setAdapter(adapter);
 
         loadFromServer(rootView, adapter);
+
+        // TODO : Async ID fetching - need to be executed before onCreateView
+        GraphRequest request = GraphRequest.newMeRequest(
+                accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        try {
+                            userID = object.getString("id");
+                            userName = object.getString("name");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
+        request.executeAsync();
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.gallery_sync);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +104,8 @@ public class Tab2Fragment extends Fragment {
                             record = result.get(i).getAsJsonObject();
                             adapter.addData(record.get("name").getAsString(),
                                             serverURL + "/" + record.get("url").getAsString(),
-                                            record.get("last_update").getAsString(), true);
+                                            record.get("fbid").getAsString(),
+                                            record.get("fbname").getAsString(), true);
                         }
                     }
                 });
@@ -92,24 +115,29 @@ public class Tab2Fragment extends Fragment {
         File f = new File(deviceURL);
         File files[] = f.listFiles();
         for (int i=0 ; i<files.length ; i++) {
-            adapter.addData(files[i].getName(), "file:" + files[i].getPath(), "time", false);
+            adapter.addData(files[i].getName(), "file:" + files[i].getPath(), userID, userName, false);
         }
     }
 
     public void syncToServer(final View view, final Tab2Adapter adapter) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        String formattedDate = df.format(new Date());
-
         for (int i=0 ; i<adapter.getCount() ; i++) {
             if (((Tab2Item) adapter.getItem(i)).isOn_server()) {
                 continue;
+            }
+
+            String userName8 = "";
+            try {
+                userName8 = URLEncoder.encode(userName, "utf-8");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             Tab2Item item = (Tab2Item) adapter.getItem(i);
 
             Ion.with(view.getContext()).load(serverURL + "/image")
                     .setHeader("name", item.getName())
-                    .setHeader("last_update", formattedDate)
+                    .setHeader("fbid", userID)
+                    .setHeader("fbname", userName8)
                     .setMultipartFile("userFile", "image/jpeg", new File(item.getUrl().substring(5)))
                     .asJsonObject()
                     .setCallback(new FutureCallback<JsonObject>() {
