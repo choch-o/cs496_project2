@@ -65,4 +65,13 @@ public class TabCAdapter extends BaseAdapter {
     }
 
     public void clear() { items.clear(); }
+
+    public Integer findKeycode(String userID) {
+        for (int i=0 ; i<items.size() ; i++) {
+            if(items.get(i).getUserID().equals(userID)) {
+                return items.get(i).getKeycode();
+            }
+        }
+        return -1;
+    }
 }

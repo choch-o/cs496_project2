@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -49,7 +49,8 @@
         <service android:name=".AlarmService" />
         <service android:name=".RingtonePlayingService" />
 
-        <activity android:name=".Sleepmode"></activity>
+        <activity android:name=".Sleepmode" />
+        <activity android:name=".WakeupActivity"></activity>
     </application>
 
 </manifest>

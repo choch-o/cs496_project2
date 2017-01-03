@@ -42,12 +42,12 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class TabCFragment extends Fragment {
-    private final String serverURL = "http://52.78.52.132:3000";
+    public static String serverURL = "http://52.78.52.132:3000";
     final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
-    private String userID = "";
-    private String userName = "";
+    public static String userID = "";
+    public static String userName = "";
     private View rootView;
-    private TabCAdapter adapter = new TabCAdapter();
+    public static TabCAdapter adapter = new TabCAdapter();
     private Button alarmBtn;
     public static String ALARM_TIME = "";
     long time;
