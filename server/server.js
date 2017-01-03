@@ -196,12 +196,42 @@ app.post('/enroll_me', function(req, res) {
     newUser.save(function(err) {
         if(err) throw err;
         console.log("[Alarm/POST/enroll_me] User saved");
+        User.find({}, function(err, results) {
+            if(err) throw err;
+			rebuildMap(results);
+        })
     })
 
     res.writeHead(200, {'Content-Type':'application/json'});
     res.write(JSON.stringify({result: 'OK'}));
     res.end();
 });
+
+function rebuildMap(results) {
+	shuffle(results);
+	connectMap(results, 0);
+}
+
+function connectMap(results, i) {
+	if(i==results.length) {
+		return;
+	}
+	curr = i;
+	next = (i+1)%results.length;
+	User.findOne({userID: results[next]['userID']}, {_id:1, userID:1}, function(err, result) {
+		User.findOneAndUpdate({userID: results[curr]['userID']}, {counterpart: result["_id"]},
+								function(err, res) {
+										if (err) throw err;
+										connectMap(results, i+1);
+									})});
+}
+
+function shuffle(a) {
+    for (let i = a.length; i; i--) {
+        let j = Math.floor(Math.random() * i);
+        [a[i - 1], a[j]] = [a[j], a[i - 1]];
+    }
+}
 
 app.get('/profile_list', function(req, res) {
     // User : "Give me the full list of profile
@@ -213,7 +243,23 @@ app.get('/profile_list', function(req, res) {
         var responseBody = results;
         res.write(JSON.stringify(responseBody));
         res.end();
+
+		// Uncomment this, if rebuild the map everytime user reload the status
+        //rebuildMap(results);
     });
+});
+
+app.get('/profile_counter/:userID', function(req, res) {
+    console.log("[Alarm] Got something on GET/profile_counter");
+    User.findOne({userID : req.params.userID}, {counterpart:1},
+            function(err, result) {
+                User.findOne({_id : result['counterpart']},
+                        function(err, counterresult) {
+                            res.writeHead(200, {'Content-Type':'application/json'});
+                            res.write(JSON.stringify(counterresult));
+                            res.end();
+                        })
+            });
 });
 
 
@@ -249,23 +295,25 @@ var alarmTime = 0;
 app.post('/set_time', function(req, res) {
     reqTime = req.body[0];
 
+    var flag = true;
     User.find({}, function(err, results) {
         if (err) throw err;
 
         for (i=0 ; i<results.length ; i++) {
-            if(results[i]==false) {
-                res.writeHead(409, {'Content-Type': 'application/json'});
-                res.write(JSON.stringify({result: 'Not changed', time: alarmTime}));
-                res.end();
-                return;
-            }
+            flag = flag & results[i]['awake'];
         }
+
+        if (flag) {
+            alarmTime = reqTime;
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.write(JSON.stringify({result: 'OK', time: alarmTime}));
+        } else {
+            res.writeHead(409, {'Content-Type': 'application/json'});
+            res.write(JSON.stringify({result: 'Not changed', time: alarmTime}));
+        }
+        res.end();
     });
-    
-    alarmTime = reqTime;
-	res.writeHead(200, {'Content-Type': 'application/json'});
-	res.write(JSON.stringify({result: 'OK', time: alarmTime}));
-	res.end();
+   
 	console.log("alarm time", alarmTime);
 });
 
@@ -274,6 +322,10 @@ app.get('/get_time', function(req, res) {
 	res.end();
 	console.log("alarm time", alarmTime);
 }); 
+
+app.get('/get_keycode/:userID', function(req, res) {
+
+});
 
 app.listen(3000, function() { console.log("Listening on port #3000" )});
 
