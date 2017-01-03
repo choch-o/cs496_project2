@@ -25,12 +25,15 @@ public class OkHttpHandler extends AsyncTask<String, Void, String> {
 
     protected String doInBackground(String... params) {
         Request request;
+        // POST
         if (params.length > 1) {
             try {
                 JSONArray contactArray = new JSONArray(params[1]);
                 Log.d("JSON ARRAY NEW", contactArray.toString());
+
             } catch (Exception e) {
             }
+
             RequestBody requestBody = RequestBody.create(JSON, params[1]);
             request = new Request.Builder()
                     .url(params[0])
@@ -43,6 +46,7 @@ public class OkHttpHandler extends AsyncTask<String, Void, String> {
                     .get()
                     .build();
         }
+        // GET
         try {
             Response response = client.newCall(request).execute();
             return response.body().string();
