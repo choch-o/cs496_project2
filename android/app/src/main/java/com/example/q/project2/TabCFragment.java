@@ -22,11 +22,18 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.socketio.ExceptionCallback;
 import com.koushikdutta.ion.Ion;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by q on 2016-12-30.
@@ -39,21 +46,24 @@ public class TabCFragment extends Fragment {
     private String userName = "";
     private View rootView;
     private TabCAdapter adapter = new TabCAdapter();
+    private Button alarmBtn;
 
+    static final int SET_ALARM_REQUEST = 1;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.tab3, container, false);
-        Button alarmBtn = (Button) rootView.findViewById(R.id.call_alarm_btn);
+        rootView = inflater.inflate(R.layout.tab3, container, false);
+        alarmBtn = (Button) rootView.findViewById(R.id.call_alarm_btn);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), AlarmActivity.class);
-                getActivity().startActivity(i);
+                startActivityForResult(i, SET_ALARM_REQUEST);
             }
         });
-
+        String formattedTime = getAlarmTime();
+        alarmBtn.setText(formattedTime);
         GridView gridView = (GridView)rootView.findViewById(R.id.alarm_view);
         adapter = new TabCAdapter();
         gridView.setAdapter(adapter);
@@ -64,13 +74,27 @@ public class TabCFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFromServer();
+                wakeUp();
+            }
+        });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                gotoSleep();
+                Intent intent = new Intent(rootView.getContext(), Sleepmode.class);
+                startActivityForResult(intent, 1001);
+                return true;
             }
         });
 
         return rootView;
     }
 
+    public void tt (String msg) {
+        Toast.makeText(rootView.getContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    // Get facebook information of me
     public void checkUser() {
         // TODO : Async ID fetching - need to be executed before onCreateView
         GraphRequest request = GraphRequest.newMeRequest(
@@ -102,12 +126,13 @@ public class TabCFragment extends Fragment {
                             Log.d("User is not on server", "Going to add");
                             enrollUser();
                         } else {
-                            loadFromServer();
+                            wakeUp();
                         }
                     }
                 });
     }
 
+    // Fetch image URL from facebook
     public void enrollUser() {
         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken,
@@ -117,7 +142,6 @@ public class TabCFragment extends Fragment {
                         try {
                             JSONObject profileJSON = response.getJSONObject().getJSONObject("picture")
                                                             .getJSONObject("data");
-                            Log.d("HEEEEEEERE", profileJSON.toString());
                             if((Boolean)profileJSON.get("is_silhouette")) {
                                 enrollUserToServer("http://dismagazine.com/uploads/2011/08/notw_silhouette-1.jpg");
                             } else {
@@ -192,5 +216,57 @@ public class TabCFragment extends Fragment {
 
     }
 
+    public void gotoSleep() {
+        Ion.with(rootView.getContext()).load(serverURL + "/good/night/" + userID)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.d("Everything will be OK", result.toString());
+                        loadFromServer();
+                    }
+                });
+    }
 
+    private String getAlarmTime() {
+        String url = "http://52.78.52.132:8080" + "/get_time";
+        OkHttpHandler handler = new OkHttpHandler();
+        String result = null;
+        try {
+            result = handler.execute(url).get();
+            Log.d("GET RESULT", result);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        Date date = new Date(Long.parseLong(result));
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        String timeFormatted = formatter.format(date);
+        return timeFormatted;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SET_ALARM_REQUEST) {
+            String formattedTime = getAlarmTime();
+            alarmBtn.setText(formattedTime);
+        }
+        else if (requestCode == 1001) {
+            wakeUp();
+            tt("Good morning! :)");
+        }
+    }
+
+    public void wakeUp() {
+        Ion.with(rootView.getContext()).load(serverURL + "/good/morning/" + userID)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.d("Everything will be OK", result.toString());
+                        loadFromServer();
+                    }
+                });
+    }
 }

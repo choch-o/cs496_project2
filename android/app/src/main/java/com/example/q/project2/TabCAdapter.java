@@ -46,10 +46,13 @@ public class TabCAdapter extends BaseAdapter {
         Picasso.with(parent.getContext()).load(items.get(position).getProfileURL())
                 .into((ImageView) convertView.findViewById(R.id.profile_item));
 
-        ((TextView)convertView.findViewById(R.id.profile_name)).setText(items.get(position).getUserName());
+        String display = items.get(position).getUserName() + "\n" + items.get(position).getPhone();
+        ((TextView)convertView.findViewById(R.id.profile_name)).setText(display);
 
         if(items.get(position).getAwake()) {
             ((FrameLayout)convertView.findViewById(R.id.profile_shadow)).setBackgroundColor(0x00000000);
+        } else {
+            ((FrameLayout)convertView.findViewById(R.id.profile_shadow)).setBackgroundColor(0xbb000000);
         }
 
         return convertView;
