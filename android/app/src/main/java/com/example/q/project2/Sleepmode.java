@@ -24,10 +24,6 @@ public class Sleepmode extends AppCompatActivity {
         wakeupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.alarmManager.cancel(MainActivity.pendingIntent);
-                Intent stopIntent = new Intent(Sleepmode.this, RingtonePlayingService.class);
-                Sleepmode.this.stopService(stopIntent);
-                Toast.makeText(Sleepmode.this, "ALARM OFF", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

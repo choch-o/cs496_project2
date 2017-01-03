@@ -1,11 +1,14 @@
 package com.example.q.project2;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -54,7 +57,8 @@ public class WakeupActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 // CALL INTENT
-
+                                Intent i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + counterPhone.toString()));
+                                WakeupActivity.this.startActivity(i);
                             }
                         });
                         enterKeycode.setHint(counterName + "'s Keycode");
@@ -65,12 +69,16 @@ public class WakeupActivity extends AppCompatActivity {
                                 int inputKeycode = Integer.parseInt(enterKeycode.getText().toString());
                                 if (inputKeycode == counterKeycode) {
                                     // Cancel alarm
-
+                                    MainActivity.alarmManager.cancel(MainActivity.pendingIntent);
+                                    Intent stopIntent = new Intent(WakeupActivity.this, RingtonePlayingService.class);
+                                    WakeupActivity.this.stopService(stopIntent);
+                                    Toast.makeText(WakeupActivity.this, "ALARM OFF", Toast.LENGTH_SHORT).show();
 
                                     // Go back to tabCFragment
                                     finish();
                                 } else {
                                     // Show error toast
+                                    Toast.makeText(WakeupActivity.this, "WRONG KEYCODE", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
