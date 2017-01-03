@@ -22,11 +22,18 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.socketio.ExceptionCallback;
 import com.koushikdutta.ion.Ion;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by q on 2016-12-30.
@@ -39,21 +46,24 @@ public class TabCFragment extends Fragment {
     private String userName = "";
     private View rootView;
     private TabCAdapter adapter = new TabCAdapter();
+    private Button alarmBtn;
 
+    static final int SET_ALARM_REQUEST = 1;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.tab3, container, false);
-        Button alarmBtn = (Button) rootView.findViewById(R.id.call_alarm_btn);
+        alarmBtn = (Button) rootView.findViewById(R.id.call_alarm_btn);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), AlarmActivity.class);
-                getActivity().startActivity(i);
+                startActivityForResult(i, SET_ALARM_REQUEST);
             }
         });
-
+        String formattedTime = getAlarmTime();
+        alarmBtn.setText(formattedTime);
         GridView gridView = (GridView)rootView.findViewById(R.id.alarm_view);
         adapter = new TabCAdapter();
         gridView.setAdapter(adapter);
@@ -192,5 +202,33 @@ public class TabCFragment extends Fragment {
 
     }
 
+    private String getAlarmTime() {
+        String url = "http://52.78.52.132:8080" + "/get_time";
+        OkHttpHandler handler = new OkHttpHandler();
+        String result = null;
+        try {
+            result = handler.execute(url).get();
+            Log.d("GET RESULT", result);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        Date date = new Date(Long.parseLong(result));
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        String timeFormatted = formatter.format(date);
+        return timeFormatted;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("ACTIVITY RESULT 1", "1111");
+        if (requestCode == SET_ALARM_REQUEST) {
+            Log.d("ACTIVITY RESULT 1", "7777");
+
+            String formattedTime = getAlarmTime();
+            alarmBtn.setText(formattedTime);
+        }
+    }
 
 }

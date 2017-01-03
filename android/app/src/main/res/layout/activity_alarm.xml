@@ -9,13 +9,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <ToggleButton
-        android:id="@+id/toggleButton"
+    <Button
+        android:id="@+id/setAlarmBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="20dp"
         android:checked="false"
-        android:onClick="OnToggleClicked" />
+        android:text="@string/set"/>
 
 </LinearLayout>
