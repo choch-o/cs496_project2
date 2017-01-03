@@ -1,11 +1,13 @@
 package com.example.q.project2;
 
 import android.app.AlarmManager;
+import android.support.v4.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +49,7 @@ public class TabCFragment extends Fragment {
     final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
     public static String userID = "";
     public static String userName = "";
+    public static String userPhone = "";
     private View rootView;
     public static TabCAdapter adapter = new TabCAdapter();
     private Button alarmBtn;
@@ -143,18 +146,27 @@ public class TabCFragment extends Fragment {
                     public void onCompleted(Exception e, JsonObject result) {
                         // If the user is not on the server
                         if (result.get("result").getAsInt() == 0) {
+//                            DialogFragment dialog = new PhoneDialogFragment();
+//                            dialog.show(getActivity().getSupportFragmentManager(), "PhoneDialogFragment");
+                            PhoneDialogFragment dialog = new PhoneDialogFragment();
+                            dialog.show(getActivity().getSupportFragmentManager(), "Phone Dialog");
                             Log.d("User is not on server", "Going to add");
-                            enrollUser();
+                            Log.d("User phone", userPhone);
+                            // enrollUser();
                         } else {
                             wakeUp();
                         }
                     }
                 });
     }
+    public void onUserEnterPhone(String phoneNumber) {
+        userPhone = phoneNumber;
+        enrollUser();
+    }
 
     // Fetch image URL from facebook
     public void enrollUser() {
-        GraphRequest request = GraphRequest.newMeRequest(
+         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken,
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
@@ -185,9 +197,10 @@ public class TabCFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         json.addProperty("userID", userID);
         json.addProperty("profileURL", profileURL);
-        json.addProperty("phone", "010-0000-0000");
+        json.addProperty("phone", userPhone);
         json.addProperty("keycode", (new Random()).nextInt(100));
 
         Ion.with(rootView.getContext()).load(serverURL + "/enroll_me")

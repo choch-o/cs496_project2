@@ -4,25 +4,18 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.telecom.Call;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-
 import java.util.concurrent.ExecutionException;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.example.q.project2.TabCFragment.userPhone;
 
 public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
     private TabLayout tabLayout;
@@ -83,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
+    }
+
+    public void onUserEnterPhone(String phone) {
+        adapter.pass(phone);
     }
 
     public void removeContacts() {
