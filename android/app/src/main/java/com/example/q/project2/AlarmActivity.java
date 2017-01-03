@@ -23,6 +23,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -73,7 +74,9 @@ public class AlarmActivity extends AppCompatActivity {
                 }
                 Log.d("TIMETIMETIME", Long.toString(time));
                 alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
-                postAlarm(time);
+
+                String result = postAlarm(time);
+
                 finish();
             }
         });
@@ -103,9 +106,16 @@ public class AlarmActivity extends AppCompatActivity {
         arr.put(Long.toString(time));
         try {
             result = handler.execute(url, arr.toString()).get();
+            JSONObject obj = new JSONObject(result);
+            Log.d("GET RESULT", obj.getString("result"));
+            if (obj.getString("result") != "OK") {
+                Toast.makeText(AlarmActivity.this, "FRIENDS SLEEPING. FAILED TO CHANGE TIME.", Toast.LENGTH_LONG).show();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
