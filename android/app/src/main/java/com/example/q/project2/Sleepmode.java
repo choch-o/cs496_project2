@@ -1,11 +1,14 @@
 package com.example.q.project2;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Sleepmode extends AppCompatActivity {
     @Override
@@ -21,6 +24,10 @@ public class Sleepmode extends AppCompatActivity {
         wakeupBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.alarmManager.cancel(MainActivity.pendingIntent);
+                Intent stopIntent = new Intent(Sleepmode.this, RingtonePlayingService.class);
+                Sleepmode.this.stopService(stopIntent);
+                Toast.makeText(Sleepmode.this, "ALARM OFF", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

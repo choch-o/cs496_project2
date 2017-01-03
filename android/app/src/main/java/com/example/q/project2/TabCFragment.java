@@ -1,5 +1,6 @@
 package com.example.q.project2;
 
+import android.app.AlarmManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -242,9 +243,11 @@ public class TabCFragment extends Fragment {
             result = handler.execute(url).get();
             JSONObject obj = new JSONObject(result);
             Log.d("GET RESULT", Long.toString(obj.getLong("time")));
-            Date date = new Date(obj.getLong("time"));
+            long time = obj.getLong("time");
+            Date date = new Date(time);
             DateFormat formatter = new SimpleDateFormat("HH:mm");
             timeFormatted = formatter.format(date);
+            MainActivity.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, MainActivity.pendingIntent);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
