@@ -96,7 +96,7 @@ public class AlarmActivity extends AppCompatActivity {
     }
 
     private String postAlarm(Long time) {
-        String url = "http://52.78.52.132:8080" + "/set_time";
+        String url = "http://52.78.52.132:3000" + "/set_time";
         OkHttpHandler handler = new OkHttpHandler();
         String result = null;
         JSONArray arr = new JSONArray();
