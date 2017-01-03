@@ -291,7 +291,7 @@ app.get('/good/:command/:userID', function(req, res) {
 });
 
 
-var alarmTime = 0;
+var alarmTime = 1483444080000;
 app.post('/set_time', function(req, res) {
     reqTime = req.body[0];
 
