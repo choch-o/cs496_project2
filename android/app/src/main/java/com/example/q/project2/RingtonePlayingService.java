@@ -2,6 +2,7 @@ package com.example.q.project2;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.util.Log;
 
 public class RingtonePlayingService extends Service {
     private Ringtone ringtone;
+    MediaPlayer mediaPlayer = new MediaPlayer();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,14 +26,23 @@ public class RingtonePlayingService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Uri ringtoneUri = Uri.parse(intent.getExtras().getString("ringtone-uri"));
         this.ringtone = RingtoneManager.getRingtone(this, ringtoneUri);
-        ringtone.play();
+//        ringtone.play();
         Log.d("ringring", "ring");
 
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), ringtoneUri);
+            mediaPlayer.setLooping(true);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        ringtone.stop();
+//        ringtone.stop();
+        mediaPlayer.stop();
     }
 }

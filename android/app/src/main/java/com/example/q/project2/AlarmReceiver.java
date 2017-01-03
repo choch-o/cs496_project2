@@ -12,7 +12,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show();
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null)
         {
@@ -22,9 +21,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         startIntent.putExtra("ringtone-uri", alarmUri.toString());
         context.startService(startIntent);
 
-        Intent wakeupActivity = new Intent(context, WakeupActivity.class);
-        wakeupActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(wakeupActivity);
+        if(TabCFragment.ringing == false) {
+            Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show();
+            Intent wakeupActivity = new Intent(context, WakeupActivity.class);
+            wakeupActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(wakeupActivity);
+            TabCFragment.ringing = true;
+        }
         /*
         Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);
         ringtone.play();

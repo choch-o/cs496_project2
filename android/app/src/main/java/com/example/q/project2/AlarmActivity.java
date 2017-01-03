@@ -71,6 +71,7 @@ public class AlarmActivity extends AppCompatActivity {
                 }
                 Log.d("TIMETIMETIME", Long.toString(time));
                 MainActivity.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, MainActivity.pendingIntent);
+                TabCFragment.ringing=false;
                 String result = postAlarm(time);
                 finish();
             }

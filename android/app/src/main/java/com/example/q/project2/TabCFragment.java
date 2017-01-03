@@ -43,6 +43,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class TabCFragment extends Fragment {
     public static String serverURL = "http://52.78.52.132:3000";
+    public static boolean ringing = false;
     final AccessToken accessToken =  AccessToken.getCurrentAccessToken();
     public static String userID = "";
     public static String userName = "";
@@ -68,6 +69,7 @@ public class TabCFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), AlarmReceiver.class);
                 MainActivity.pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
                 MainActivity.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, MainActivity.pendingIntent);
+                TabCFragment.ringing = false;
             }
         });
         alarmBtn.setOnLongClickListener(new View.OnLongClickListener() {

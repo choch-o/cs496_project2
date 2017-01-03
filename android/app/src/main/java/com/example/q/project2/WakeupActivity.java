@@ -25,6 +25,7 @@ public class WakeupActivity extends AppCompatActivity {
     private Integer counterKeycode;
 
     private TextView myKeycodeView;
+    private TextView keycodeMsg;
     private Button callBtn;
     private EditText enterKeycode;
     private Button submitBtn;
@@ -35,6 +36,7 @@ public class WakeupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wakeup);
 
         myKeycodeView = (TextView)findViewById(R.id.myKeycode);
+        keycodeMsg = (TextView)findViewById(R.id.keycodeMsg);
         callBtn = (Button)findViewById(R.id.callBtn);
         enterKeycode = (EditText)findViewById(R.id.enterKeycode);
         submitBtn = (Button)findViewById(R.id.submitKeycode);
@@ -52,6 +54,16 @@ public class WakeupActivity extends AppCompatActivity {
                         }
 
                         myKeycodeView.setText(Integer.toString(myKeycode));
+                        keycodeMsg.setText(counterName);
+                        keycodeMsg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // CALL INTENT
+                                Intent i = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + counterPhone.toString()));
+                                WakeupActivity.this.startActivity(i);
+                            }
+                        });
+
                         callBtn.setText("Call " + counterName);
                         callBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
