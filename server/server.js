@@ -222,6 +222,27 @@ app.get('/profile_image/:target', function(req, res) {
     // pictures will be fetched from the web (url provieded by facebook)
 });
 
+app.get('/good/:command/:userID', function(req, res) {
+    // User : "Set me as a sleeping status."
+    console.log("[Alarm] Got something on GET/good"+req.params.command);
+    console.log("[Alarm] " + req.params.userID);
+
+    var awake = true;
+    if(req.params.command == "night") {
+        awake = false; }
+
+    User.findOneAndUpdate({userID : req.params.userID}, {awake : awake},
+            function(err, results) {
+        if (err) {
+            console.log("[Alarm/GET/goodnight] Something goes wrong :(");
+            throw err;
+        }
+        res.writeHead(200, {'Content-Type':'application/json'});
+        res.write(JSON.stringify({result:results.length}));
+        res.end();
+    });
+});
+
 
 
 
