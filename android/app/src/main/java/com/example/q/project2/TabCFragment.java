@@ -75,6 +75,8 @@ public class TabCFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 wakeUp();
+                String formattedTime = getAlarmTime();
+                alarmBtn.setText(formattedTime);
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
