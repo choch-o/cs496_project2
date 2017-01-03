@@ -1,6 +1,7 @@
 package com.example.q.project2;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -49,6 +50,7 @@ public class TabCFragment extends Fragment {
     private TabCAdapter adapter = new TabCAdapter();
     private Button alarmBtn;
     public static String ALARM_TIME = "";
+    long time;
 
     static final int SET_ALARM_REQUEST = 1;
     @Override
@@ -57,15 +59,25 @@ public class TabCFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.tab3, container, false);
         alarmBtn = (Button) rootView.findViewById(R.id.call_alarm_btn);
+        String formattedTime = getAlarmTime();
+        alarmBtn.setText(formattedTime);
         alarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getActivity(), AlarmActivity.class);
-                startActivityForResult(i, SET_ALARM_REQUEST);
+                Toast.makeText(getActivity(), "ALARM ON", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), AlarmReceiver.class);
+                MainActivity.pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
+                MainActivity.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, MainActivity.pendingIntent);
             }
         });
-        String formattedTime = getAlarmTime();
-        alarmBtn.setText(formattedTime);
+        alarmBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent i = new Intent(getActivity(), AlarmActivity.class);
+                startActivityForResult(i, SET_ALARM_REQUEST);
+                return true;
+            }
+        });
         GridView gridView = (GridView)rootView.findViewById(R.id.alarm_view);
         adapter = new TabCAdapter();
         gridView.setAdapter(adapter);
@@ -243,11 +255,10 @@ public class TabCFragment extends Fragment {
             result = handler.execute(url).get();
             JSONObject obj = new JSONObject(result);
             Log.d("GET RESULT", Long.toString(obj.getLong("time")));
-            long time = obj.getLong("time");
+            time = obj.getLong("time");
             Date date = new Date(time);
             DateFormat formatter = new SimpleDateFormat("HH:mm");
             timeFormatted = formatter.format(date);
-            MainActivity.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, MainActivity.pendingIntent);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
