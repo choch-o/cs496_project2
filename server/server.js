@@ -247,7 +247,22 @@ app.get('/good/:command/:userID', function(req, res) {
 
 var alarmTime = 0;
 app.post('/set_time', function(req, res) {
-	alarmTime = req.body[0];
+    reqTime = req.body[0];
+
+    User.find({}, function(err, results) {
+        if (err) throw err;
+
+        for (i=0 ; i<results.length ; i++) {
+            if(results[i]==false) {
+                res.writeHead(409, {'Content-Type': 'application/json'});
+                res.write(JSON.stringify({result: 'Not changed', time: alarmTime}));
+                res.end();
+                return;
+            }
+        }
+    });
+    
+    alarmTime = reqTime;
 	res.writeHead(200, {'Content-Type': 'application/json'});
 	res.write(JSON.stringify({result: 'OK', time: alarmTime}));
 	res.end();
