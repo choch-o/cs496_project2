@@ -36,6 +36,10 @@ public class Pager extends FragmentStatePagerAdapter {
         }
     }
 
+    public void pass(String phone) {
+        tab3.onUserEnterPhone(phone);
+    }
+
     @Override
     public int getCount() {
         return tabCount;
