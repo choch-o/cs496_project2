@@ -64,13 +64,35 @@ public class TabCFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadFromServer();
+                wakeUp();
+            }
+        });
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                gotoSleep();
+                Intent intent = new Intent(rootView.getContext(), Sleepmode.class);
+                startActivityForResult(intent, 1001);
+                return true;
             }
         });
 
         return rootView;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1001) {
+            wakeUp();
+            tt("Good morning! :)");
+        }
+    }
+
+    public void tt (String msg) {
+        Toast.makeText(rootView.getContext(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    // Get facebook information of me
     public void checkUser() {
         // TODO : Async ID fetching - need to be executed before onCreateView
         GraphRequest request = GraphRequest.newMeRequest(
@@ -102,12 +124,13 @@ public class TabCFragment extends Fragment {
                             Log.d("User is not on server", "Going to add");
                             enrollUser();
                         } else {
-                            loadFromServer();
+                            wakeUp();
                         }
                     }
                 });
     }
 
+    // Fetch image URL from facebook
     public void enrollUser() {
         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken,
@@ -117,7 +140,6 @@ public class TabCFragment extends Fragment {
                         try {
                             JSONObject profileJSON = response.getJSONObject().getJSONObject("picture")
                                                             .getJSONObject("data");
-                            Log.d("HEEEEEEERE", profileJSON.toString());
                             if((Boolean)profileJSON.get("is_silhouette")) {
                                 enrollUserToServer("http://dismagazine.com/uploads/2011/08/notw_silhouette-1.jpg");
                             } else {
@@ -192,5 +214,27 @@ public class TabCFragment extends Fragment {
 
     }
 
+    public void gotoSleep() {
+        Ion.with(rootView.getContext()).load(serverURL + "/good/night/" + userID)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.d("Everything will be OK", result.toString());
+                        loadFromServer();
+                    }
+                });
+    }
 
+    public void wakeUp() {
+        Ion.with(rootView.getContext()).load(serverURL + "/good/morning/" + userID)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.d("Everything will be OK", result.toString());
+                        loadFromServer();
+                    }
+                });
+    }
 }
