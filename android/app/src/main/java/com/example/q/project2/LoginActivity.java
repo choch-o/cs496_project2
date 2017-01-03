@@ -39,39 +39,28 @@ public class LoginActivity extends Activity {
         AppEventsLogger.activateApp(this);
         callbackManager = CallbackManager.Factory.create();
 
-        if (isLoggedIn()) {
-            moveToMain();
-        }
-        else {
-            setContentView(R.layout.activity_fb_login);
-            info = (TextView) findViewById(R.id.info);
-            loginButton = (LoginButton) findViewById(R.id.login_button);
-            loginButton.setReadPermissions(Arrays.asList("user_friends"));
-            loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    // On success, display user info
-                    info.setText(
-                            "User ID: "
-                                    + loginResult.getAccessToken().getUserId()
-                                    + "\n" +
-                                    "Auth Token: "
-                                    + loginResult.getAccessToken().getToken()
-                    );
-                    moveToMain();
-                }
+        setContentView(R.layout.activity_fb_login);
+        info = (TextView) findViewById(R.id.info);
+        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions(Arrays.asList("user_friends"));
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                // On success, display user info
+                moveToMain();
+            }
 
-                @Override
-                public void onCancel() {
-                    info.setText("Login attempt canceled.");
-                }
+            @Override
+            public void onCancel() {
+                info.setText("Login attempt canceled.");
+            }
 
-                @Override
-                public void onError(FacebookException exception) {
-                    info.setText("Login attempt failed.");
-                }
-            });
-        }
+            @Override
+            public void onError(FacebookException exception) {
+                info.setText("Login attempt failed.");
+            }
+        });
+
     }
 
     private void moveToMain() {
@@ -84,10 +73,5 @@ public class LoginActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private boolean isLoggedIn() {
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        return accessToken != null;
     }
 }
