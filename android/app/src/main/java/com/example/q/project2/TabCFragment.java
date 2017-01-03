@@ -47,6 +47,7 @@ public class TabCFragment extends Fragment {
     private View rootView;
     private TabCAdapter adapter = new TabCAdapter();
     private Button alarmBtn;
+    public static String ALARM_TIME = "";
 
     static final int SET_ALARM_REQUEST = 1;
     @Override
@@ -75,14 +76,16 @@ public class TabCFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 wakeUp();
-                String formattedTime = getAlarmTime();
-                alarmBtn.setText(formattedTime);
+                ALARM_TIME = getAlarmTime();
+                alarmBtn.setText(ALARM_TIME);
             }
         });
         fab.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 gotoSleep();
+                ALARM_TIME = getAlarmTime();
+                alarmBtn.setText(ALARM_TIME);
                 Intent intent = new Intent(rootView.getContext(), Sleepmode.class);
                 startActivityForResult(intent, 1001);
                 return true;
