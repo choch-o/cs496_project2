@@ -23,6 +23,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         context.startService(startIntent);
 
         Intent wakeupActivity = new Intent(context, WakeupActivity.class);
+        wakeupActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(wakeupActivity);
         /*
         Ringtone ringtone = RingtoneManager.getRingtone(context, alarmUri);

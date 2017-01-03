@@ -164,7 +164,6 @@ public class TabCFragment extends Fragment {
                                 enrollUserToServer("http://dismagazine.com/uploads/2011/08/notw_silhouette-1.jpg");
                             } else {
                                 enrollUserToServer(profileJSON.getString("url"));
-                                Toast.makeText(rootView.getContext(), profileJSON.getString("url"), Toast.LENGTH_SHORT).show();
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

@@ -50,13 +50,11 @@ public class AlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alarm);
 
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
-        MainActivity.alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         setAlarmBtn = (Button) findViewById(R.id.setAlarmBtn);
         setAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 long time;
-                Toast.makeText(AlarmActivity.this, "ALARM ON", Toast.LENGTH_SHORT).show();
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
                 calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
@@ -91,6 +89,8 @@ public class AlarmActivity extends AppCompatActivity {
             Log.d("GET RESULT", obj.getString("result"));
             if (!obj.getString("result").equals("OK")) {
                 Toast.makeText(AlarmActivity.this, "FRIENDS SLEEPING. FAILED TO CHANGE TIME.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(AlarmActivity.this, "ALARM ON", Toast.LENGTH_SHORT).show();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

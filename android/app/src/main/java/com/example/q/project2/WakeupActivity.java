@@ -51,7 +51,7 @@ public class WakeupActivity extends AppCompatActivity {
                             e1.printStackTrace();
                         }
 
-                        myKeycodeView.setText(myKeycode);
+                        myKeycodeView.setText(Integer.toString(myKeycode));
                         callBtn.setText("Call " + counterName);
                         callBtn.setOnClickListener(new View.OnClickListener() {
                             @Override

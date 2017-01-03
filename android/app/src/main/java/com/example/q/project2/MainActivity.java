@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+        MainActivity.alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         removeContacts();
 
         Intent i = getIntent();
