@@ -229,20 +229,24 @@ public class TabCFragment extends Fragment {
     }
 
     private String getAlarmTime() {
-        String url = "http://52.78.52.132:8080" + "/get_time";
+        String url = "http://52.78.52.132:3000" + "/get_time";
         OkHttpHandler handler = new OkHttpHandler();
         String result = null;
+        String timeFormatted = null;
         try {
             result = handler.execute(url).get();
-            Log.d("GET RESULT", result);
+            JSONObject obj = new JSONObject(result);
+            Log.d("GET RESULT", Long.toString(obj.getLong("time")));
+            Date date = new Date(obj.getLong("time"));
+            DateFormat formatter = new SimpleDateFormat("HH:mm");
+            timeFormatted = formatter.format(date);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Date date = new Date(Long.parseLong(result));
-        DateFormat formatter = new SimpleDateFormat("HH:mm");
-        String timeFormatted = formatter.format(date);
         return timeFormatted;
     }
 
