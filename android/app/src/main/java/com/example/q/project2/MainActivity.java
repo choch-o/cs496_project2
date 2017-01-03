@@ -1,5 +1,7 @@
 package com.example.q.project2;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements TabLayout.OnTabSe
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private Pager adapter;
+    public static PendingIntent pendingIntent;
+    public static AlarmManager alarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

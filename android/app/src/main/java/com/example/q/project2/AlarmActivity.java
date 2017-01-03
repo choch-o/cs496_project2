@@ -39,8 +39,7 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class AlarmActivity extends AppCompatActivity {
     TimePicker alarmTimePicker;
-    PendingIntent pendingIntent;
-    AlarmManager alarmManager;
+
     private Button setAlarmBtn;
     static final int SET_ALARM_REQUEST = 1;
 
@@ -51,7 +50,7 @@ public class AlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alarm);
 
         alarmTimePicker = (TimePicker) findViewById(R.id.timePicker);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        MainActivity.alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         setAlarmBtn = (Button) findViewById(R.id.setAlarmBtn);
         setAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +61,7 @@ public class AlarmActivity extends AppCompatActivity {
                 calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
                 calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
                 Intent intent = new Intent(AlarmActivity.this, AlarmReceiver.class);
-                pendingIntent = PendingIntent.getBroadcast(AlarmActivity.this, 0, intent, 0);
+                MainActivity.pendingIntent = PendingIntent.getBroadcast(AlarmActivity.this, 0, intent, 0);
 
                 time=(calendar.getTimeInMillis()-(calendar.getTimeInMillis()%60000));
                 if(System.currentTimeMillis()>time)
@@ -73,29 +72,11 @@ public class AlarmActivity extends AppCompatActivity {
                         time = time + (1000*60*60*24);
                 }
                 Log.d("TIMETIMETIME", Long.toString(time));
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, pendingIntent);
-
+                MainActivity.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, time, 10000, MainActivity.pendingIntent);
                 String result = postAlarm(time);
-
                 finish();
             }
         });
-    }
-
-    public void OnToggleClicked(View view)
-    {
-        long time;
-        if (((ToggleButton) view).isChecked())
-        {
-
-        }
-        else
-        {
-            alarmManager.cancel(pendingIntent);
-            Intent stopIntent = new Intent(this, RingtonePlayingService.class);
-            this.stopService(stopIntent);
-            Toast.makeText(AlarmActivity.this, "ALARM OFF", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private String postAlarm(Long time) {
@@ -108,7 +89,7 @@ public class AlarmActivity extends AppCompatActivity {
             result = handler.execute(url, arr.toString()).get();
             JSONObject obj = new JSONObject(result);
             Log.d("GET RESULT", obj.getString("result"));
-            if (obj.getString("result") != "OK") {
+            if (!obj.getString("result").equals("OK")) {
                 Toast.makeText(AlarmActivity.this, "FRIENDS SLEEPING. FAILED TO CHANGE TIME.", Toast.LENGTH_LONG).show();
             }
         } catch (InterruptedException e) {
