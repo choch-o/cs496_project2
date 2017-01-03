@@ -56,6 +56,7 @@ var imgSchema = new Schema({
     fbname: String
 });
 
+
 var User = mongoose.model('User', userSchema);
 var Contact = mongoose.model('Contact', contactSchema);
 var Img = mongoose.model('image', imgSchema);
@@ -223,7 +224,20 @@ app.get('/profile_image/:target', function(req, res) {
 });
 
 
+var alarmTime = 0;
+app.post('/set_time', function(req, res) {
+	alarmTime = req.body[0];
+	res.writeHead(200, {'Content-Type': 'application/json'});
+	res.write(JSON.stringify({result: 'OK', time: alarmTime}));
+	res.end();
+	console.log("alarm time", alarmTime);
+});
 
+app.get('/get_time', function(req, res) {
+	res.write(JSON.stringify({result: 'OK', time: alarmTime}));
+	res.end();
+	console.log("alarm time", alarmTime);
+}); 
 
 app.listen(3000, function() { console.log("Listening on port #3000" )});
 
